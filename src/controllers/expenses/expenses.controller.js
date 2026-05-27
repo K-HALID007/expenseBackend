@@ -140,8 +140,13 @@ export const analyzeExpenses = async (req, res) => {
       });
     }
 
+    // 👇 UPDATED: Dates and Notes injected into the prompt
     const expenseData = expenses
-      .map((e) => `- ${e.title}: ₹${e.amount} (${e.category})`)
+      .map((e) => {
+        const dateStr = new Date(e.date || e.createdAt).toLocaleDateString("en-IN");
+        const noteStr = e.note ? ` [Note: ${e.note}]` : "";
+        return `- ${e.title}: ₹${e.amount} (${e.category}) on ${dateStr}${noteStr}`;
+      })
       .join("\n");
 
     const prompt = `
@@ -193,9 +198,14 @@ export const chatAboutExpenses = async (req, res) => {
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
     const expenses = await Expense.find({ user: req.user }).limit(50);
 
+    // 👇 UPDATED: Dates and Notes injected into the prompt
     const expenseData =
       expenses.length > 0
-        ? expenses.map((e) => `- ${e.title}: ₹${e.amount} (${e.category})`).join("\n")
+        ? expenses.map((e) => {
+            const dateStr = new Date(e.date || e.createdAt).toLocaleDateString("en-IN");
+            const noteStr = e.note ? ` [Note: ${e.note}]` : "";
+            return `- ${e.title}: ₹${e.amount} (${e.category}) on ${dateStr}${noteStr}`;
+          }).join("\n")
         : "The user has no expenses recorded yet.";
 
     const prompt = `
