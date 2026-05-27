@@ -24,7 +24,11 @@ router.get("/summary", getExpenseSummary);
 router.get("/analyze", analyzeExpenses);
 router.post("/chat", chatAboutExpenses);
 router.get("/chat/history", getChatHistory);
-router.post("/chat/clear", clearChatHistory);
+
+
+router.delete("/chat/history", clearChatHistory);
+
+
 router.get("/:id", getSingleExpense);
 router.put("/:id", updateExpense);
 router.delete("/:id", deleteExpense);
